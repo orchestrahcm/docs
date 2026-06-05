@@ -683,9 +683,52 @@ Common options:
 Example:
 ```text
 TASK
-Par1: {"resotype":"R","resobjid":"MANAGER","wfstatus":"NEW","isactive":true}
-Par2: =container.WorkflowData
-Par3:
+Par1: options object sample 
+	{
+		"instatus" : "NEW",
+		"currentstatus" : "SUBMITTED",
+		"wfstatus" :  "SUBMITTED",
+		"resotype" : "P",
+		"resobjid" : container.PNP.Manid
+	}
+Par2: data object sample
+	{
+		"AWART" : "1000",
+		"PERNR": page.Elements[FieldName="PERNR"].Data,
+		"DATES": page.Elements[FieldName="DATES"].Data,
+		"BEGDA": $substring(page.Elements[FieldName="DATES"].Data, 0, 8),
+		"ENDDA": $substring(page.Elements[FieldName="DATES"].Data, 8, 8),
+		"NOTES": page.Elements[FieldName="NOTES"].Data
+	}
+Cond (Par4):
+{
+  "and": [
+    {
+      "==": [
+        {
+          "var": "WIId"
+        },
+       "0"
+      ]
+    },
+    {
+      "==": [
+        {
+          "var": "PageEvent"
+        },
+        "Post"
+      ]
+    },
+    {
+      "==": [
+        {
+          "var": "PostFieldName"
+        },
+        "DOSUBMIT"
+      ]
+    }
+  ]
+}
 ```
 
 ## TRX
