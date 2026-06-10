@@ -12,6 +12,7 @@ This document describes the scheme functions implemented in this folder. Each en
 - [GENWS](#genws) - Generate Shift
 - [GETCOUNT](#getcount) - Important Figures
 - [GETDEF](#getdef) - Get Default
+- [GETPARAM](#getparam) - Get Parameter
 - [GETPERNR](#getpernr) - Get Employees
 - [GETREPORT](#getreport) - Report Retrieval
 - [GOURL](#gourl) - Go to URL
@@ -53,8 +54,10 @@ This document describes the scheme functions implemented in this folder. Each en
 Performs an HTTP request against an external or internal endpoint.
 
 Parameters:
-- `Par1`: JSONata expression that resolves to an options object.
-- `Par2`: JSONLogic condition that controls execution.
+- `Par1`: options about API call
+- `Par2`: DATA object in POST method
+- `Par3`: Variable name in container that api response will be assigned to
+- `Cond`: JSONLogic condition
 
 Common options:
 - `link`: Request URL.
@@ -65,8 +68,23 @@ Common options:
 Example:
 ```text
 API
-Par1: {"link":"https://api.example.com/items","method":"GET","authtype":"Bearer","token":"=container.AuthToken"}
-Par2: {"==":[{"var":"container.UserRole"},"Admin"]}
+Par1: 
+{
+	"link":"https://api.example.com/items",
+	"method":"GET",
+	"authtype":"Basic",
+	"token":"=container.AuthToken",
+	"username":"",
+	"password":""
+}
+Par2: 
+{
+	"PERNR": container.PERNR, 
+	"BEGDA": "20260101", 
+	"ENDDA": "20260102", 
+	"AWART": "1000" 
+}
+Par3: RESOBJ
 ```
 
 ## AUTH
@@ -177,6 +195,24 @@ Example:
 GETDEF
 Par1: EmployeeStatus
 Par2:
+```
+
+## GETPARAM
+
+Reads a system parameter value by name. Par1 could be only one system parameter, or could be more than one parameter like param1, param2. Secret parameters decrypted and pushed into container.
+
+Parameters:
+- `Par1`: Parameter or parameters with comma.
+- `Cons`: JSONLogic condition.
+
+Notes:
+- Typically used for values passed from page navigation, workflow context, or request parameters.
+
+Example:
+```text
+GETPARAM
+Par1: SAPHOST,SAPUSER
+Cond:
 ```
 
 ## GETPERNR
@@ -676,10 +712,12 @@ Parameters:
 - `Par3`: JSONLogic condition.
 
 Common options:
+- `instatus` : Starting status of workflow step.
+- `currentstatus` : Output status of workflow step.
+- `wfstatus` : Workflow status. (WFDATA)
 - `resotype`, `resobjid`: Responsible object type and identifier.
-- `wfstatus`, `instatus`, `currentstatus`: Workflow state fields.
-- `isactive`, `completetask`, `newtask`: Task flow control flags.
-
+- `completewf` : false if workflow continues, true if workflow completed.
+- `taskname` : definition of task, no affect, just data in line.
 Example:
 ```text
 TASK
