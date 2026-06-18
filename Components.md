@@ -285,9 +285,150 @@ In programs, use Caption prop to update text.
 
 ## OrcReportView
 
+![OrcReportView](images/comps/OrcReportViewer.png)
+
 - Component: `OrcReportView`
-- Properties: `title`, `className`, `maxHeight`, `showHeader`, `Nodes`
-- Events: `onReportClick`, `onFolderClick`
+- Properties: `Title`, `SubTitle`, `ContainerClassName`, `Nodes`
+- Events: `onClick`
+
+Nodes should be added from program in OrchestraHCM. When onclick fired, postback event send to Orchestra server with selected node id in element Data prop.
+
+<details>
+<summary>Example Code (click to expand)</summary>
+
+```javascript
+  var _reportViewer = page.Elements.filter(o => o.FieldName === "reportViewer")[0];
+  if (_reportViewer) {
+    if (container.Langu == "TR") {
+      _reportViewer.Title = "Rapor Ağacı";
+      _reportViewer.SubTitle = "dsdsds sdsd";
+      _reportViewer.Nodes = [
+        {
+          IconName: "material-symbols:folder-outline",
+          NodeId: "Node1",
+          NodeText: "İnsan Kaynakları Raporları",
+          Expanded: false,
+          Selected: false,
+          IsPostBack: false,
+          ToolTip: "İnsan Kaynakları Raporları zaman yönetimi bordro, dsksjd skdjskd kşdsjşksşd",
+          Children: [
+            {
+              IconName: "material-symbols:folder-outline",
+              NodeId: "Node2",
+              NodeText: "Zaman Raporları",
+              Expanded: false,
+              Selected: false,
+              IsPostBack: false,
+              Children: [
+                {
+                  IconName: "gcp:cloud-run",
+                  NodeId: "Node2",
+                  NodeText: "Devam ve Devamsızlık Raporu",
+                  Expanded: false,
+                  Selected: false,
+                  IsPostBack: false
+                },
+                {
+                  IconName: "gcp:cloud-run",
+                  NodeId: "Node5",
+                  NodeText: "Devam ve Devamsızlık Raporu1",
+                  Expanded: false,
+                  Selected: false,
+                  IsPostBack: false
+                },
+                {
+                  IconName: "gcp:cloud-run",
+                  NodeId: "Node6",
+                  NodeText: "Devam ve Devamsızlık Raporu2",
+                  Expanded: false,
+                  Selected: false,
+                  IsPostBack: false
+                }
+
+              ]
+
+            },
+            {
+              IconName: "material-symbols:folder-outline",
+              NodeId: "Node3",
+              NodeText: "Ana Veri Raporları",
+              Expanded: false,
+              Selected: false,
+              IsPostBack: false
+            }
+          ]
+        }
+
+      ]
+    }
+    else {
+      _reportViewer.Title = "Report Tree";
+      _reportViewer.SubTitle = "Execute reports by clicking and making your selections";
+      _reportViewer.Nodes = [
+        {
+          IconName: "material-symbols:folder-outline",
+          NodeId: "Node1",
+          NodeText: "Human Resources",
+          Expanded: false,
+          Selected: false,
+          IsPostBack: false,
+          ToolTip: "İnsan Kaynakları Raporları zaman yönetimi bordro, dsksjd skdjskd kşdsjşksşd",
+          Children: [
+            {
+              IconName: "material-symbols:folder-outline",
+              NodeId: "Node2",
+              NodeText: "Time Management",
+              Expanded: false,
+              Selected: false,
+              IsPostBack: false,
+              Children: [
+                {
+                  IconName: "gcp:cloud-run",
+                  NodeId: "Node2",
+                  NodeText: "Absence and Attendances",
+                  Expanded: false,
+                  Selected: false,
+                  IsPostBack: false
+                },
+                {
+                  IconName: "gcp:cloud-run",
+                  NodeId: "Node5",
+                  NodeText: "Absence and Attendances-2",
+                  Expanded: false,
+                  Selected: false,
+                  IsPostBack: false
+                },
+                {
+                  IconName: "gcp:cloud-run",
+                  NodeId: "Node6",
+                  NodeText: "Absence and Attendances-3",
+                  Expanded: false,
+                  Selected: false,
+                  IsPostBack: false
+                }
+
+              ]
+
+            },
+            {
+              IconName: "material-symbols:folder-outline",
+              NodeId: "Node3",
+              NodeText: "Master Data Reports",
+              Expanded: false,
+              Selected: false,
+              IsPostBack: false
+            }
+          ]
+        }
+
+      ]
+    }
+
+  }
+```
+
+</details>
+
 
 ## OrcProfile
 
