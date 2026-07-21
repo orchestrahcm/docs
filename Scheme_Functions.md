@@ -741,7 +741,7 @@ Common options:
 - `currentstatus` : Output status of workflow step.
 - `wfstatus` : Workflow status. (WFDATA)
 - `resotype`, `resobjid`: Responsible object type and identifier.
-- `completewf` : false if workflow continues, true if workflow completed.
+- `completewf` : false if workflow continues, true if workflow completed. This prop is optional, if not supplied, system checks page statuses with laststatus. is true.
 - `taskname` : definition of task, no affect, just data in line.
 Example:
 ```text
