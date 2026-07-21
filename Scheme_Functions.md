@@ -339,7 +339,7 @@ Shows a message to the user in the UI.
 Parameters:
 - `Par1`: Message title.
 - `Par2`: Message body.
-- `Par3`: Error flag.
+- `Par3`: Error flag. true means show message in red background color.
 - `Cond`: JSONLogic condition.
 
 Example:
@@ -348,6 +348,13 @@ MESSAGE
 Par1: Warning
 Par2: Employee status is inactive.
 Par3: false
+Cond: StateId.
+```
+```text
+MESSAGE
+Par1: Error
+Par2: External system cannot be accessible
+Par3: true
 Cond: StateId.
 ```
 
@@ -531,15 +538,25 @@ Parameters:
 Value forms:
 - Plain string.
 - JSON object or array.
-- Container reference starting with `=`.
+- Container variables can be set by prefix `=`.
+examples: 
+	=container.PNP.Pernr
+	=container.PNP.Ename
+
 - System values such as `SY-DATUM` or `SY-UNAME`.
 
 Example:
 ```text
 SETDATA
-Par1: EmployeeStatus
-Par2: ACTIVE
-Cond:
+Par1: PERNR
+Par2: =container.PNP.Pernr
+Cond: state0
+```
+```text
+SETDATA
+Par1: ENAME
+Par2: =container.PNP.Ename
+Cond: state0
 ```
 
 ## SETDEF
