@@ -19,7 +19,7 @@ This document describes the scheme functions implemented in this folder. Each en
 - [INBOX](#inbox) - Inbox
 - [INFTY](#infty) - Infotype Operation
 - [ME](#me) - My Employee Data
-- [MESSAGE](#message) - Show Message
+- [MSG](#msg) - Show Message
 - [OINFTY](#oinfty) - OM Infotype Operation
 - [PBINFTY](#pbinfty) - Applicant Infotype Operation
 - [PDF](#pdf) - Generate PDF
@@ -98,29 +98,35 @@ Parameters:
 Example:
 ```text
 AUTH
-Par1: HR_Manager
+Par1: EMPLOYEE
 Par2:
+```
+
+```text
+AUTH
+Par1: john.howard@acb.com
+Par2: USER
 ```
 
 ## COM
 
-Writes a comment line into the schema log.
+Writes a comment line into the schema log. This function has no affect in algorithm.
 
-Parameters:
-- `Par1`: Comment text.
+Parameters are not used in this function.
+Use comment area only.
 
 Example:
 ```text
 COM
-Par1: Starting employee processing
+Comment: Starting employee processing
 ```
 
-## COMMIT
+## COMMIT (Obsolote)
 
 Commits the active database transaction started with `TRX`.
 
 Parameters:
-- `Par1`: JSONLogic condition.
+- `Cond`: JSONLogic condition. StateId.
 
 Example:
 ```text
@@ -134,13 +140,13 @@ Deletes a person record by personnel number.
 
 Parameters:
 - `Par1`: Personnel number or JSONata expression.
-- `Par2`: JSONLogic condition.
+- `Cond`: JSONLogic condition. StateId.
 
 Example:
 ```text
 DELPERNR
 Par1: =container.SelectedPernr
-Par2: {"==":[{"var":"container.ConfirmDelete"},"X"]}
+Cond: {"==":[{"var":"container.ConfirmDelete"},"X"]}
 ```
 
 ## GENWS
@@ -149,7 +155,7 @@ Generates shift data for a personnel number and date range.
 
 Parameters:
 - `Par1`: JSONata expression that resolves to a shift generation options object.
-- `Par2`: JSONLogic condition.
+- `Cond`: JSONLogic condition. StateId.
 
 Common options:
 - `PERNR`: Personnel number.
@@ -160,7 +166,7 @@ Example:
 ```text
 GENWS
 Par1: {"PERNR":"12345","BEGDA":"20240101","ENDDA":"20240131"}
-Par2:
+Cond:
 ```
 
 ## GETCOUNT
@@ -171,7 +177,7 @@ Parameters:
 - `Par1`: Report code.
 - `Par2`: JSONata expression for filter options.
 - `Par3`: Container variable name for the result.
-- `Par4`: JSONLogic condition.
+- `Cond`: JSONLogic condition. StateId.
 
 Example:
 ```text
@@ -179,22 +185,22 @@ GETCOUNT
 Par1: PENDING_TASKS
 Par2: {"BEGDA":"=container.StartDate","ENDDA":"=container.EndDate"}
 Par3: PendingCount
-Par4:
+Cond:
 ```
 
 ## GETDEF
 
-Reads a saved default value for a field or parameter.
+Reads a saved default value for a field or parameter. Using this function in page load provides user to display last entry in selected field.
 
 Parameters:
 - `Par1`: Field name.
-- `Par2`: JSONLogic condition.
+- `Cond`: JSONLogic condition. StateId.
 
 Example:
 ```text
 GETDEF
 Par1: EmployeeStatus
-Par2:
+Cond: State01
 ```
 
 ## GETPARAM
@@ -203,7 +209,7 @@ Reads a system parameter value by name. Par1 could be only one system parameter,
 
 Parameters:
 - `Par1`: Parameter or parameters with comma.
-- `Cons`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Notes:
 - Typically used for values passed from page navigation, workflow context, or request parameters.
@@ -221,7 +227,7 @@ Loads employee master data by personnel number and stores the result in `contain
 
 Parameters:
 - `Par1`: Options object or personnel number reference.
-- `Par2`: JSONLogic condition.
+- `Cond`: JSONLogic condition. StateId.
 
 Notes:
 - If `Par1` is empty, `container.UserPernr` is used.
@@ -231,7 +237,7 @@ Example:
 ```text
 GETPERNR
 Par1: {"PERNR":"=container.SelectedPernr"}
-Par2:
+Cond: state01
 ```
 
 ## GETREPORT
@@ -241,14 +247,14 @@ Runs a predefined report and returns its result set.
 Parameters:
 - `Par1`: Report code.
 - `Par2`: JSONata expression for report parameters.
-- `Par3`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Example:
 ```text
 GETREPORT
 Par1: ABSENCE_REPORT
 Par2: {"PERNR":"=container.Pernr","BEGDA":"=container.Begda","ENDDA":"=container.Endda"}
-Par3:
+Cond:
 ```
 
 ## GOURL
@@ -257,13 +263,13 @@ Navigates to another page, route, or URL.
 
 Parameters:
 - `Par1`: Target URL, route, or a special value such as `BACK`.
-- `Par2`: JSONLogic condition.
+- `Cond`: JSONLogic condition. StateId.
 
 Example:
 ```text
 GOURL
 Par1: BACK
-Par2:
+Cond:
 ```
 
 ## INBOX
@@ -272,7 +278,7 @@ Creates a workflow inbox item for a user or role.
 
 Parameters:
 - `Par1`: JSONata expression that resolves to an inbox options object.
-- `Par2`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Common options:
 - `recipient`: Target user or role.
@@ -284,7 +290,7 @@ Example:
 ```text
 INBOX
 Par1: {"recipient":"MANAGER","taskname":"Approve leave","priority":"H"}
-Par2:
+Cond:
 ```
 
 ## INFTY
@@ -294,7 +300,7 @@ Reads, creates, updates, or deletes personnel infotype data.
 Parameters:
 - `Par1`: Options object or JSONata expression.
 - `Par2`: Data payload for insert or update operations.
-- `Par3`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Common options:
 - `INFTY`: Infotype code such as `0002`.
@@ -311,22 +317,22 @@ Par2:
 Par3:
 ```
 
-## ME
+## ME (Obsolote)
 
 Loads the current logged-in user’s employee data.
 
 Parameters:
 - `Par1`: Optional options object.
-- `Par2`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Example:
 ```text
 ME
 Par1:
-Par2:
+Cond:
 ```
 
-## MESSAGE
+## MSG
 
 Shows a message to the user in the UI.
 
@@ -334,7 +340,7 @@ Parameters:
 - `Par1`: Message title.
 - `Par2`: Message body.
 - `Par3`: Error flag.
-- `Par4`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Example:
 ```text
@@ -342,8 +348,10 @@ MESSAGE
 Par1: Warning
 Par2: Employee status is inactive.
 Par3: false
-Par4: {"==":[{"var":"container.Status"},"INACTIVE"]}
+Cond: StateId.
 ```
+
+İf Par1 or Par2 starts with =, it means it support JSONata.
 
 ## OINFTY
 
@@ -352,7 +360,7 @@ Reads or writes Organizational Management infotype data.
 Parameters:
 - `Par1`: Options object or JSONata expression.
 - `Par2`: Data payload.
-- `Par3`: JSONLogic condition.
+- `Cond`: JSONLogic condition. StateId.
 
 Common options:
 - `INFTY`, `COM`, `OBJID`, `BEGDA`, `ENDDA`, `SUBTY`, `SEQNR`, `PLVAR`, `OTYPE`.
@@ -362,7 +370,7 @@ Example:
 OINFTY
 Par1: {"INFTY":"1000","COM":"GET","OBJID":"=container.Objid"}
 Par2:
-Par3:
+Cond:
 ```
 
 ## PBINFTY
@@ -372,7 +380,7 @@ Updates applicant infotype data used in the applicant module.
 Parameters:
 - `Par1`: Options object or JSONata expression.
 - `Par2`: Data payload.
-- `Par3`: JSONLogic condition.
+- `Cond`: JSONLogic condition. StateId.
 
 Common options:
 - `INFTY`: Applicant infotype code such as `PB0002`.
@@ -385,7 +393,7 @@ Example:
 PBINFTY
 Par1: {"INFTY":"PB0002","COM":"UPD","APPNO":"=container.AppNo"}
 Par2: =container.ApplicantData
-Par3:
+Cond:
 ```
 
 ## PDF
@@ -394,7 +402,7 @@ Generates a PDF document from a template and data.
 
 Parameters:
 - `Par1`: Options object or JSONata expression.
-- `Par2`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Common options:
 - `template`: Template code.
@@ -405,7 +413,7 @@ Example:
 ```text
 PDF
 Par1: {"template":"LEAVE_REPORT","pernr":"=container.Pernr","begda":"20240101","endda":"20240131"}
-Par2:
+Cond:
 ```
 
 ## PEOPLE
@@ -414,13 +422,13 @@ Works on a filtered employee list.
 
 Parameters:
 - `Par1`: JSONata filter expression or selection object.
-- `Par2`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Example:
 ```text
 PEOPLE
 Par1: {"Orgeht":"1000","Status":"ACTIVE"}
-Par2:
+Cond:
 ```
 
 ## PJSON
@@ -430,7 +438,7 @@ Transforms JSON data and stores the result in a target variable or object.
 Parameters:
 - `Par1`: JSONata expression.
 - `Par2`: Target variable or property path.
-- `Par3`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 See also: [Common JSONata Examples](#common-jsonata-examples)
 
@@ -439,7 +447,7 @@ Example:
 PJSON
 Par1: $filter(container.Employees, function($e){$e.Salary > 50000})
 Par2: HighEarners
-Par3:
+Cond:
 ```
 ## PROG
 
@@ -477,7 +485,7 @@ Runs the payroll calculation schema.
 
 Parameters:
 - `Par1`: Payroll options object or JSONata expression.
-- `Par2`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Common options:
 - `PERNR`: Personnel number.
@@ -488,7 +496,7 @@ Example:
 ```text
 RUNPY
 Par1: {"PERNR":"12345","BEGDA":"20240101","ENDDA":"20240131"}
-Par2:
+Cond:
 ```
 
 ## RUNTE
@@ -497,7 +505,7 @@ Runs the time evaluation schema.
 
 Parameters:
 - `Par1`: Time evaluation options object or JSONata expression.
-- `Par2`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Common options:
 - `PERNR`: Personnel number.
@@ -508,7 +516,7 @@ Example:
 ```text
 RUNTE
 Par1: {"PERNR":"12345","BEGDA":"20240101","ENDDA":"20240131","TEVTY":"MONTHLY"}
-Par2:
+Cond:
 ```
 
 ## SETDATA
@@ -518,7 +526,7 @@ Assigns a value to a page field or object.
 Parameters:
 - `Par1`: Field name.
 - `Par2`: Value to assign.
-- `Par3`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Value forms:
 - Plain string.
@@ -531,7 +539,7 @@ Example:
 SETDATA
 Par1: EmployeeStatus
 Par2: ACTIVE
-Par3:
+Cond:
 ```
 
 ## SETDEF
@@ -540,13 +548,13 @@ Stores the current value of a field as the user’s default.
 
 Parameters:
 - `Par1`: Field name.
-- `Par2`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Example:
 ```text
 SETDEF
 Par1: EmployeeStatus
-Par2:
+Cond:
 ```
 
 ## SETENB
@@ -556,14 +564,14 @@ Enables or disables a field.
 Parameters:
 - `Par1`: Field name.
 - `Par2`: Boolean enable flag.
-- `Par3`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Example:
 ```text
 SETENB
 Par1: SalaryField
 Par2: false
-Par3: {"==":[{"var":"container.UserRole"},"Viewer"]}
+Cond: {"==":[{"var":"container.UserRole"},"Viewer"]}
 ```
 
 ## SETHDR
@@ -587,7 +595,7 @@ Parameters:
 - `Par1`: Field name.
 - `Par2`: JSON options object.
 - `Par3`: Predefined option set code.
-- `Par4`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Common options:
 - `TABLE`, `VALUE`, `TEXT`: Source table and field mappings.
@@ -608,7 +616,7 @@ SETOP
 Par1: StatusField
 Par2: {"VNAME":"SCH_STATUS","VALUE":"CODE","TEXT":"TEXT","VTYPE":"VT","FILTER":"A,B,C"}
 Par3:
-Par4:
+Cond:
 ```
 
 ## SETPROP
@@ -618,14 +626,14 @@ Sets multiple properties on a field or component.
 Parameters:
 - `Par1`: Field name.
 - `Par2`: Property object or JSONata expression.
-- `Par3`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Example:
 ```text
 SETPROP
 Par1: ErrorField
 Par2: {"color":"red","fontWeight":"bold"}
-Par3:
+Cond:
 ```
 
 ## SETPROP1
@@ -636,7 +644,7 @@ Parameters:
 - `Par1`: Field name.
 - `Par2`: Property name.
 - `Par3`: Property value.
-- `Par4`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Example:
 ```text
@@ -644,7 +652,7 @@ SETPROP1
 Par1: Title
 Par2: fontSize
 Par3: 16px
-Par4:
+Cond:
 ```
 
 ## SETRQ
@@ -654,14 +662,14 @@ Marks a field as required or optional.
 Parameters:
 - `Par1`: Field name.
 - `Par2`: Required flag.
-- `Par3`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Example:
 ```text
 SETRQ
 Par1: EmployeeID
 Par2: true
-Par3:
+Cond:
 ```
 
 ## SETVS
@@ -671,14 +679,14 @@ Shows or hides a field.
 Parameters:
 - `Par1`: Field name.
 - `Par2`: Visible flag.
-- `Par3`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Example:
 ```text
 SETVS
 Par1: InternalNotes
 Par2: false
-Par3: {"==":[{"var":"container.UserRole"},"Employee"]}
+Cond: {"==":[{"var":"container.UserRole"},"Employee"]}
 ```
 
 ## TABLE
@@ -690,7 +698,7 @@ Parameters:
 - `Par2`: Model or table code.
 - `Par3`: JSONata filter expression.
 - `Par4`: Container key for the result.
-- `Par5`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Example:
 ```text
@@ -699,7 +707,7 @@ Par1: =container.TenantId
 Par2: Employee
 Par3: $filter(records, function($r){$r.Status="ACTIVE"})
 Par4: ActiveEmployees
-Par5:
+Cond:
 ```
 
 ## TASK
@@ -709,7 +717,7 @@ Creates a workflow task record and stores workflow data with it.
 Parameters:
 - `Par1`: Options object or JSONata expression.
 - `Par2`: Workflow data payload.
-- `Par3`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Common options:
 - `instatus` : Starting status of workflow step.
@@ -774,12 +782,12 @@ Cond (Par4):
 Starts a database transaction.
 
 Parameters:
-- `Par1`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Example:
 ```text
 TRX
-Par1:
+Cond:
 ```
 
 ## WFLOAD
@@ -787,12 +795,12 @@ Par1:
 Loads a workflow definition from the database.
 
 Parameters:
-- `Par1`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Example:
 ```text
 WFLOAD
-Par1:
+Cond:
 ```
 
 ## WFSTART
@@ -801,13 +809,13 @@ Starts a new workflow instance.
 
 Parameters:
 - `Par1`: Workflow status or JSONLogic condition depending on schema usage.
-- `Par2`: Optional JSONLogic condition.
+- `Cond`: Optional JSONLogic condition.
 
 Example:
 ```text
 WFSTART
 Par1: NEW
-Par2:
+Cond:
 ```
 
 ## WFSTEP
@@ -818,7 +826,7 @@ Parameters:
 - `Par1`: Task or step name.
 - `Par2`: Direct JSON options object.
 - `Par3`: Responsible agent or user.
-- `Par4`: JSONLogic condition.
+- `Cond`: JSONLogic condition.
 
 Example:
 ```text
@@ -826,7 +834,7 @@ WFSTEP
 Par1: ApproveRequest
 Par2: {"status":"NEW"}
 Par3: MANAGER
-Par4:
+Cond:
 ```
 
 ## Common JSONLogic Examples
@@ -934,7 +942,7 @@ Most functions accept the JSONLogic object in the last parameter and evaluate it
 SETENB
 Par1: SalaryField
 Par2: true
-Par3: {"==":[{"var":"container.UserRole"},"Admin"]}
+Cond: {"==":[{"var":"container.UserRole"},"Admin"]}
 ```
 
 ## Common JSONata Examples
@@ -1043,7 +1051,7 @@ Par1: $map(container.Employees, function($e){
 	}
 })
 Par2: EmployeeOptions
-Par3:
+Cond:
 ```
 
 ---

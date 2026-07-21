@@ -9,6 +9,20 @@ Read a value directly from the container.
 ```text
 container.EmployeeName
 ```
+## Read Page Query Param
+
+Read page query paramater in URL, here com=... is read
+
+```text
+page.QueryParams.com
+```
+## Read Page Element Data
+
+Read page element data, FieldName = SLART Data prop read
+
+```text
+page.Elements[FieldName="SLART"].Data
+```
 
 ## String Concatenation
 
