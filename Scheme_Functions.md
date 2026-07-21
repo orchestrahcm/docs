@@ -236,9 +236,18 @@ Notes:
 Example:
 ```text
 GETPERNR
-Par1: {"PERNR":"=container.SelectedPernr"}
+Par1: 
+{
+	"PERNR": container.SelectedPernr
+}
 Cond: state01
 ```
+```text
+GETPERNR
+{
+"PERNR": page.Elements[FieldName="PERNR"].Data
+}
+Cond: 
 
 ## GETREPORT
 
