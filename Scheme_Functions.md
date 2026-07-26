@@ -4,6 +4,8 @@ This document describes the scheme functions implemented in this folder. Each en
 
 ## Function Index
 
+Functions used in schemes.
+
 - [API](#api) - API Call
 - [AUTH](#auth) - Authorization Check
 - [COM](#com) - Comment
