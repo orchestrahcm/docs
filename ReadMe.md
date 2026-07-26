@@ -43,7 +43,7 @@ Use this page for quick access to OrchestraHCM documentation.
 		<td width="50%" valign="top">
 			<div style="border: 1px solid #d0d7de; border-radius: 12px; padding: 16px; height: 100%;">
 				<h3>Program Samples</h3>
-				<p>Type Script Codes.</p>
+				<p>Type Script Codes</p>
 				<p><a href="./TS_Samples.md"><strong>Open File</strong></a></p>
 			</div>
 		</td>
