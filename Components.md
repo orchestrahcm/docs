@@ -1,6 +1,6 @@
 # UI Components
 
-This document summarizes the dynamically rendered UI components on the page and the core properties used by these components.
+This document summarizes the dynamically rendered UI components on the page and the core properties used by these components..
 
 ## Contents
 
