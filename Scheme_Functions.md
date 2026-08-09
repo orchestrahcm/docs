@@ -66,6 +66,7 @@ Common options:
 - `method`: HTTP method such as GET or POST.
 - `authtype`: Authentication mode such as Bearer or Basic.
 - `token`, `username`, `password`: Authentication values.
+- `result`: Result object for api response, check result in container
 
 Example:
 ```text
@@ -77,7 +78,8 @@ Par1:
 	"authtype":"Basic",
 	"token":"=container.AuthToken",
 	"username":"",
-	"password":""
+	"password":"",
+	"result": "APIRES"
 }
 Par2: 
 {
@@ -86,7 +88,6 @@ Par2:
 	"ENDDA": "20260102", 
 	"AWART": "1000" 
 }
-Par3: RESOBJ
 ```
 
 ## AUTH
