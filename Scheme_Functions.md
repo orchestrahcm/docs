@@ -8,6 +8,7 @@ Functions used in schemes.
 
 - [API](#api) - API Call
 - [AUTH](#auth) - Authorization Check
+- [BATCH](#batch) - Batch Input
 - [COM](#com) - Comment
 - [COMMIT](#commit) - Transaction Commit
 - [DELPERNR](#delpernr) - Delete Person
@@ -17,17 +18,18 @@ Functions used in schemes.
 - [GETPARAM](#getparam) - Get Parameter
 - [GETPERNR](#getpernr) - Get Employees
 - [GETREPORT](#getreport) - Report Retrieval
+- [GETNODE](#getnode) - Gets selected node object data
 - [GOURL](#gourl) - Go to URL
 - [INBOX](#inbox) - Inbox
 - [INFTY](#infty) - Infotype Operation
 - [ME](#me) - My Employee Data
 - [MSG](#msg) - Show Message
+- [NODE](#node) - Adds node to reportview
 - [OINFTY](#oinfty) - OM Infotype Operation
 - [PBINFTY](#pbinfty) - Applicant Infotype Operation
 - [PDF](#pdf) - Generate PDF
 - [PEOPLE](#people) - People
 - [PJSON](#pjson) - Process JSON
-- [Common JSONata Examples](#common-jsonata-examples)
 - [PRINT](#print) - Print Log Output
 - [PROG](#prog) - Calls program
 - [RUNPY](#runpy) - Run Payroll Scheme
@@ -43,10 +45,8 @@ Functions used in schemes.
 - [SETVS](#setvs) - Set Visible
 - [TABLE](#table) - Read Table
 - [TASK](#task) - Create Task
-- [TRX](#trx) - Start Transaction
-- [WFLOAD](#wfload) - Load Workflow
-- [WFSTART](#wfstart) - Start Workflow
-- [WFSTEP](#wfstep) - Workflow Step
+- [NODE](#node) - Create Node in TreeView
+
 - [Common JSONLogic Examples](#common-jsonlogic-examples)
 
 ---
@@ -109,6 +109,46 @@ Par2:
 AUTH
 Par1: john.howard@acb.com
 Par2: USER
+```
+
+## BATCH
+
+Imports full data to specific infotypes. This function is used to import external data by scheme. '0000', '0001', '0002', '0003', '0105'
+
+Parameters:
+- `Par1`: Infotype Number
+- `Par2`: Data array for specific infotype.
+
+Example:
+```text
+BATCH
+Par1: 00003
+Par2: P00003
+```
+
+```text
+BATCH
+Par1: 0000
+Par2: P0000
+```
+
+For example, you received data from external api, here you map and create new array object for BATCH function.
+
+```text
+$map(container.APIRES, function($emp) {
+    {
+      "PERNR": $emp.pernr,
+      "BEGDA": "20000101",
+      "ENDDA": "99991231",
+      "MASSN": "01",
+      "MASSG": "01",
+      "STAT2": "3"
+    }
+})
+```
+and place this mapping with PJSON like this prior to BATCH
+```text
+PJSON above_map_code P0000
 ```
 
 ## COM
@@ -269,6 +309,21 @@ Par2: {"PERNR":"=container.Pernr","BEGDA":"=container.Begda","ENDDA":"=container
 Cond:
 ```
 
+## GETNODE
+
+Gets selected node object and puts it to container as defined key in Par1.
+
+Parameters:
+- `Par1`: Report tree fieldname.
+- `Par2`: Selected node variable name in container.
+- `Cond`: JSONLogic condition.
+
+Adds node object to reportview page element.
+
+```text
+GETNODE  repTree SELREP
+```
+
 ## GOURL
 
 Navigates to another page, route, or URL.
@@ -371,6 +426,24 @@ Cond: StateId.
 ```
 
 İf Par1 or Par2 starts with =, it means it support JSONata.
+
+## NODE
+
+Parameters:
+- `Par1`: Options.
+- `Cond`: JSONLogic condition.
+
+Adds node object to reportview page element.
+
+```text
+{
+     "id": "folder0", //node id
+     "fieldname": "repTree", //report viewer fieldname
+     "icon": "glyphs-poly:folder",
+     "label": "Legal Report",   
+     "pid": "#". //parent node id
+}
+```
 
 ## OINFTY
 
@@ -806,65 +879,31 @@ Cond (Par4):
 }
 ```
 
-## TRX
+## NODE
 
-Starts a database transaction.
+Inserts new node in treeview.
 
 Parameters:
-- `Cond`: JSONLogic condition.
+- `Par1`: Node options.
 
 Example:
 ```text
-TRX
-Cond:
+{
+	"fieldname" :"reporttree1",
+	"icon" :"mdi:folder",
+	"label" :"ESS Reports",
+	"pid" :"#"
+}
+
+
 ```
 
-## WFLOAD
 
-Loads a workflow definition from the database.
 
-Parameters:
-- `Cond`: JSONLogic condition.
 
-Example:
-```text
-WFLOAD
-Cond:
-```
 
-## WFSTART
 
-Starts a new workflow instance.
 
-Parameters:
-- `Par1`: Workflow status or JSONLogic condition depending on schema usage.
-- `Cond`: Optional JSONLogic condition.
-
-Example:
-```text
-WFSTART
-Par1: NEW
-Cond:
-```
-
-## WFSTEP
-
-Adds or updates a workflow step.
-
-Parameters:
-- `Par1`: Task or step name.
-- `Par2`: Direct JSON options object.
-- `Par3`: Responsible agent or user.
-- `Cond`: JSONLogic condition.
-
-Example:
-```text
-WFSTEP
-Par1: ApproveRequest
-Par2: {"status":"NEW"}
-Par3: MANAGER
-Cond:
-```
 
 ## Common JSONLogic Examples
 
