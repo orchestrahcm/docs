@@ -283,14 +283,43 @@ Par1:
 {
 	"PERNR": container.SelectedPernr
 }
-Cond: state01
+Cond: Get
 ```
 ```text
 GETPERNR
 {
 "PERNR": page.Elements[FieldName="PERNR"].Data
 }
-Cond: 
+Cond: Get
+```
+
+Retrieve people data based on auth objects of user
+```text
+GETPERNR
+{
+	"MODE": "M", //mode M means multiple people will be accessed
+	"BUKRS": "", //optional, company code
+	"WERKS": "", //optional, personnel area
+	"BTRTL": "", //optional, personnel sub area
+	"PERSG": "", //optional, employee group
+	"PERSK": "", //optional, employee sub group
+	"STELL": "", //optional, job id
+	"ORGEH": "", //optional, organization unit
+	"ABKRS": "", //optional, payroll area
+	"PLANS": "", //optional, position
+	"STAT2": "", //optional, status
+
+}
+Cond: Get
+```
+or use simply /if there is no selection needed
+```text
+GETPERNR
+{
+	"MODE": "M" //mode M means multiple people will be accessed
+}
+Cond: Get
+```
 
 ## GETREPORT
 
