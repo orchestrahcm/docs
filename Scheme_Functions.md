@@ -320,6 +320,32 @@ GETPERNR
 }
 Cond: Get
 ```
+or use simply /if there is no selection needed but with authorized infotypes
+```text
+{
+     "Mode": "M",
+     "Infotypes": [
+            {
+              'Infty': '0000',
+              'Begda': '20260101',
+              'Endda': '99991231',
+              'Subty': ''
+            },
+            {
+              'Infty': '0001',
+              'Begda': '20260101',
+              'Endda': '99991231',
+              'Subty': ''
+            },
+            {
+              'Infty': '0002',
+              'Begda': '20260101',
+              'Endda': '99991231',
+              'Subty': ''
+            }
+     ]
+}
+```
 
 ## GETREPORT
 
