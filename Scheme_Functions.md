@@ -549,12 +549,19 @@ Generates a PDF document from a template and data.
 
 Parameters:
 - `Par1`: Options object or JSONata expression.
+- `Par2`: Specific Scenerio
 - `Cond`: JSONLogic condition.
 
 Common options:
 - `template`: Template code.
 - `pernr`: Personnel number.
 - `begda`, `endda`: Date range.
+- `mode`: M - container.PNP people
+
+Par 2 values;
+- P : Payroll, slipType needed optionally, otherwise it uses STD0 as payroll slip format
+- L : Leave Agreement, if you use this option, then check AL_AWART and AL_KTART parameters
+- W : Work Document
 
 Example:
 ```text
@@ -851,20 +858,24 @@ Cond: {"==":[{"var":"container.UserRole"},"Employee"]}
 Reads records from a database table and stores them in the container.
 
 Parameters:
-- `Par1`: Tenant ID.
-- `Par2`: Model or table code.
-- `Par3`: JSONata filter expression.
+- `Par1`: Model or table code.
+- `Par2`: JSONLogin Filtee
+- `Par3`: no use.
 - `Par4`: Container key for the result.
-- `Cond`: JSONLogic condition.
+- `Cond`: JSONLogic condition for function.
 
-Example:
+Example 1: Static filtering on view object
 ```text
 TABLE
-Par1: =container.TenantId
-Par2: Employee
-Par3: $filter(records, function($r){$r.Status="ACTIVE"})
-Par4: ActiveEmployees
-Cond:
+Par1: V_THRPA03
+Par2: {"WERKS": '3400'}
+```
+
+Example 2: Dynamic filtering on view object, (PostBack on WERKS field)
+```text
+TABLE
+Par1: V_THRPA03
+Par2: {"WERKS": page.Elements[FieldName="WERKS"].Data}
 ```
 
 ## TASK
