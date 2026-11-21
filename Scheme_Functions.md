@@ -4,54 +4,99 @@ This document describes the scheme functions implemented in this folder. Each en
 
 ## Function Index
 
-Functions used in schemes.
+Functions used in schemes. The tags show the scheme types a function can be used in:
+`S` = Screen, `D` = Data, `T` = Time, `P` = Payroll. Each section also lists them under "Schemes".
 
-- [API](#api) - API Call
-- [AUTH](#auth) - Authorization Check
-- [BATCH](#batch) - Batch Input
-- [COM](#com) - Comment
-- [COMMIT](#commit) - Transaction Commit
-- [DELPERNR](#delpernr) - Delete Person
-- [GENWS](#genws) - Generate Shift
-- [GETCOUNT](#getcount) - Important Figures
-- [GETDEF](#getdef) - Get Default
-- [GETPARAM](#getparam) - Get Parameter
-- [GETPERNR](#getpernr) - Get Employees
-- [GETREPORT](#getreport) - Report Retrieval
-- [GETNODE](#getnode) - Gets selected node object data
-- [GOURL](#gourl) - Go to URL
-- [INBOX](#inbox) - Inbox
-- [INFTY](#infty) - Infotype Operation
-- [ME](#me) - My Employee Data
-- [MSG](#msg) - Show Message
-- [NODE](#node) - Adds node to reportview
-- [OINFTY](#oinfty) - OM Infotype Operation
-- [PBINFTY](#pbinfty) - Applicant Infotype Operation
-- [PDF](#pdf) - Generate PDF
-- [PEOPLE](#people) - People
-- [PJSON](#pjson) - Process JSON
-- [PRINT](#print) - Print Log Output
-- [PROG](#prog) - Calls program
-- [RUNPY](#runpy) - Run Payroll Scheme
-- [RUNTE](#runte) - Run Time Scheme
-- [SETDATA](#setdata) - Set Data
-- [SETDEF](#setdef) - Set Default
-- [SETENB](#setenb) - Set Enable
-- [SETHDR](#sethdr) - Set Header
-- [SETOP](#setop) - Add Options
-- [SETPROP](#setprop) - Set Property
-- [SETPROP1](#setprop1) - Set Single Property
-- [SETRQ](#setrq) - Set Required
-- [SETVS](#setvs) - Set Visible
-- [TABLE](#table) - Read Table
-- [TASK](#task) - Create Task
-- [NODE](#node) - Create Node in TreeView
+Time and Payroll schemes have their own calculation functions (e.g. `GENWT`, `TOLER`, `P0008`, `NET`), which are not described here.
+
+- [ACTION](#action) - Page Action `D`
+- [API](#api) - API Call `S` `D`
+- [AUTH](#auth) - Authorization Check `S`
+- [BATCH](#batch) - Batch Input `S`
+- [COM](#com) - Comment `S` `D` `T` `P`
+- [COMMIT](#commit-obsolote) - Transaction Commit `S`
+- [DELPERNR](#delpernr) - Delete Person `S`
+- [GENWS](#genws) - Generate Shift `S`
+- [GETCOUNT](#getcount) - Important Figures `S`
+- [GETDEF](#getdef) - Get Default `S`
+- [GETNODE](#getnode) - Gets selected node object data `S`
+- [GETPARAM](#getparam) - Get Parameter `S`
+- [GETPERNR](#getpernr) - Get Employees `S` `D`
+- [GETREPORT](#getreport) - Report Retrieval `S`
+- [GOURL](#gourl) - Go to URL `S`
+- [INBOX](#inbox) - Inbox `S`
+- [INFTY](#infty) - Infotype Operation `S`
+- [JOB](#job) - Scheduled Scheme Run `D`
+- [MAIL](#mail) - Send Email `S`
+- [ME](#me-obsolote) - My Employee Data `S`
+- [MSG](#msg) - Show Message `S`
+- [NODE](#node) - Adds node to report viewer tree `S`
+- [OINFTY](#oinfty) - OM Infotype Operation `S`
+- [PBINFTY](#pbinfty) - Applicant Infotype Operation `S`
+- [PDF](#pdf) - Generate PDF `S`
+- [PEOPLE](#people-obsolote) - People (disabled)
+- [PJSON](#pjson) - Process JSON `S` `D`
+- [PRINT](#print) - Print Log Output `S` `D` `T` `P`
+- [PROG](#prog) - Calls program `S` `D` `T` `P`
+- [RUNPY](#runpy) - Run Payroll Scheme `S`
+- [RUNTE](#runte) - Run Time Scheme `S`
+- [SETCITEM](#setcitem) - Set Card Item `S`
+- [SETDATA](#setdata) - Set Data `S`
+- [SETDEF](#setdef) - Set Default `S`
+- [SETENB](#setenb) - Set Enable `S`
+- [SETHDR](#sethdr) - Set Header `S`
+- [SETOP](#setop) - Add Options `S`
+- [SETPROP](#setprop) - Set Property `S`
+- [SETPROP1](#setprop1) - Set Single Property `S`
+- [SETRQ](#setrq) - Set Required `S`
+- [SETVS](#setvs) - Set Visible `S`
+- [SMS](#sms) - Send SMS `S`
+- [TABLE](#table) - Read Table `S`
+- [TASK](#task) - Create Task `S` `D`
+- [TRXML](#trxml) - SGK XML Download `S`
+- [VERIFY](#verify) - Verification Code `S`
+- [WORKDAYS](#workdays) - Working Days `S` `D`
 
 - [Common JSONLogic Examples](#common-jsonlogic-examples)
 
 ---
 
+## ACTION
+
+**Schemes:** Data
+
+Adds an action to the response of a data scheme. The page that runs the scheme executes the actions in order.
+
+Parameters:
+- `Par1`: Action name.
+- `Par2`: Object name (text, URL or field name(s) depending on the action).
+- `Par3`: Action parameter (optional).
+- `Par4`: JSONLogic condition.
+
+Actions:
+- `MESSAGE`: Shows `Par2` as a message; `Par3` is the type `E`, `W`, `I` or `S`. Type `E` also stops the page (e.g. a task is not completed).
+- `ALERT`: Shows `Par2` in an alert box.
+- `NAVIGATE`: Goes to the URL in `Par2`; `Par3`: `NEW` (new tab) or `REPLACE`.
+- `BACK`: Returns to the page the form was opened from.
+- `HIDE`, `SHOW`, `DISABLE`, `ENABLE`: Hides, shows, disables or enables the field(s) in `Par2` (comma separated).
+
+Example:
+```text
+ACTION
+Par1: MESSAGE
+Par2: End date can not be before begin date
+Par3: E
+Par4: {"<":[{"var":"Data.Endda"},{"var":"Data.Begda"}]}
+
+ACTION
+Par1: HIDE
+Par2: NOTES,ATTACHMENT
+Par4: {"==":[{"var":"Data.Type"},"01"]}
+```
+
 ## API
+
+**Schemes:** Screen, Data
 
 Performs an HTTP request against an external or internal endpoint.
 
@@ -92,6 +137,8 @@ Par2:
 
 ## AUTH
 
+**Schemes:** Screen
+
 Checks whether the current user is authorized for the requested action.
 
 Parameters:
@@ -112,6 +159,8 @@ Par2: USER
 ```
 
 ## BATCH
+
+**Schemes:** Screen
 
 Imports full data to specific infotypes. This function is used to import external data by scheme. '0000', '0001', '0002', '0003', '0105'
 
@@ -153,6 +202,8 @@ PJSON above_map_code P0000
 
 ## COM
 
+**Schemes:** Screen, Data, Time, Payroll
+
 Writes a comment line into the schema log. This function has no affect in algorithm.
 
 Parameters are not used in this function.
@@ -166,6 +217,8 @@ Comment: Starting employee processing
 
 ## COMMIT (Obsolote)
 
+**Schemes:** Screen
+
 Commits the active database transaction started with `TRX`.
 
 Parameters:
@@ -178,6 +231,8 @@ Par1: {"==":[{"var":"container.Success"},true]}
 ```
 
 ## DELPERNR
+
+**Schemes:** Screen
 
 Deletes a person record by personnel number.
 
@@ -193,6 +248,8 @@ Cond: {"==":[{"var":"container.ConfirmDelete"},"X"]}
 ```
 
 ## GENWS
+
+**Schemes:** Screen
 
 Generates shift data for a personnel number and date range.
 
@@ -214,6 +271,8 @@ Cond:
 
 ## GETCOUNT
 
+**Schemes:** Screen
+
 Loads summary counts used in dashboards and overview screens.
 
 Parameters:
@@ -233,6 +292,8 @@ Cond:
 
 ## GETDEF
 
+**Schemes:** Screen
+
 Reads a saved default value for a field or parameter. Using this function in page load provides user to display last entry in selected field.
 
 Parameters:
@@ -247,6 +308,8 @@ Cond: State01
 ```
 
 ## GETPARAM
+
+**Schemes:** Screen
 
 Reads a system parameter value by name. Par1 could be only one system parameter, or could be more than one parameter like param1, param2. Secret parameters decrypted and pushed into container.
 
@@ -265,6 +328,8 @@ Cond:
 ```
 
 ## GETPERNR
+
+**Schemes:** Screen, Data
 
 Loads employee master data by personnel number and stores the result in `container.PNP`.
 
@@ -349,6 +414,8 @@ or use simply /if there is no selection needed but with authorized infotypes
 
 ## GETREPORT
 
+**Schemes:** Screen
+
 Runs a predefined report and returns its result set.
 
 Parameters:
@@ -366,6 +433,8 @@ Cond:
 
 ## GETNODE
 
+**Schemes:** Screen
+
 Gets selected node object and puts it to container as defined key in Par1.
 
 Parameters:
@@ -381,6 +450,8 @@ GETNODE  repTree SELREP
 
 ## GOURL
 
+**Schemes:** Screen
+
 Navigates to another page, route, or URL.
 
 Parameters:
@@ -395,6 +466,8 @@ Cond:
 ```
 
 ## INBOX
+
+**Schemes:** Screen
 
 Creates a workflow inbox item for a user or role.
 
@@ -416,6 +489,8 @@ Cond:
 ```
 
 ## INFTY
+
+**Schemes:** Screen
 
 Reads, creates, updates, or deletes personnel infotype data.
 
@@ -439,7 +514,82 @@ Par2:
 Par3:
 ```
 
+## JOB
+
+**Schemes:** Data
+
+Schedules a data scheme (`Type = Data`). An hourly background job runs the executable data schemes whose JOB row is due in the current hour (`Europe/Istanbul` time) and whose condition is met. Inside the scheme run itself the row does nothing.
+
+Parameters:
+- `Par1`: Schedule (plain JSON):
+  - `freq`: `HOURLY`, `DAILY`, `WEEKLY` or `MONTHLY` (required).
+  - `hour`: An hour or a list of hours (0-23). Every hour for `HOURLY` when empty, `0` for the others.
+  - `days`: `WEEKLY`: weekdays `1` = Monday .. `7` = Sunday; `MONTHLY`: days `1`-`31` or `"L"` (last day). A day after the end of the month (e.g. 31 in April) runs on the last day. Required for `WEEKLY` / `MONTHLY`.
+  - `begda`, `endda`: Validity of the job as `YYYYMMDD`; open when empty.
+  - `user`, `pernr`, `langu`: `UserName` (default `JOB`), `UserPernr` and `Langu` (default `TR`) of the run.
+  - `data`: Initial `container.Data` of the run.
+- `Par4`: JSONLogic condition (or a scheme state), checked on the job container before the run.
+
+The container of a job run has `PageEvent = "Job"`, `JobRun = true`, `JobSeqnr` (the JOB row), `JobHour`, `WfId = "0"`, no roles and the system date (`SysDate`, `SysDay`, `SysMonth`, `SysYear`).
+
+Notes:
+- A scheme runs at most once an hour, also with several due JOB rows (the first one by `Seqnr` runs it).
+- Invalid `Par1` / `Par4`, scheme errors and `MESSAGE` actions (`ACTION`) of type `E` are written to the error log.
+- Rows with `Deact` = `X` / `*` disable the job; `Executable = false` disables the scheme.
+
+Example (every day at 07:00; `hour` = `0` (midnight) when empty):
+```text
+JOB
+Par1: {"freq": "DAILY", "hour": 7}
+```
+
+Example (every day at 09:00 and 18:00 from 2027, run as user `HRADMIN` in English with initial data):
+```text
+JOB
+Par1: {"freq": "DAILY", "hour": [9, 18], "begda": "20270101", "user": "HRADMIN", "langu": "EN", "data": {"Mode": "REMINDER"}}
+```
+
+Example (on the 1st and the 15th of the month at 06:00, and every Monday at 08:00 and 17:00 in 2027 except August):
+```text
+JOB
+Par1: {"freq": "MONTHLY", "days": [1, 15], "hour": 6}
+
+JOB
+Par1: {"freq": "WEEKLY", "days": [1], "hour": [8, 17], "begda": "20270101", "endda": "20271231"}
+Par4: {"!=":[{"var":"SysMonth"},8]}
+```
+
+## MAIL
+
+**Schemes:** Screen
+
+Sends an email through the configured SendGrid service.
+
+Parameters:
+- `Par1`: JSONata expression that resolves to an options object.
+- `Par4`: JSONLogic condition.
+
+Options:
+- `to`: Recipient email address.
+- `subject`: Email subject, up to 200 characters.
+- `html`: Optional HTML body.
+- `text`: Optional plain-text body. At least `html` or `text` is required.
+- `from`: Optional sender address configured and verified in SendGrid.
+- `bcc`: Optional array of BCC recipient addresses.
+- `result`: Optional container variable name. Defaults to `MAILRESULT`.
+
+The result variable contains `success`, `channel`, `maskedTarget` and `timestamp`. Failures also contain `error`.
+
+Example:
+```text
+MAIL
+Par1: {"to":container.Email,"subject":"Request approved","text":"Your request has been approved.","result":"MailResult"}
+Par4: {"==":[{"var":"Status"},"APPROVED"]}
+```
+
 ## ME (Obsolote)
+
+**Schemes:** Screen
 
 Loads the current logged-in user’s employee data.
 
@@ -455,6 +605,8 @@ Cond:
 ```
 
 ## MSG
+
+**Schemes:** Screen
 
 Shows a message to the user in the UI.
 
@@ -484,23 +636,32 @@ Cond: StateId.
 
 ## NODE
 
+**Schemes:** Screen
+
+Adds a node to the tree of a report viewer (`OrcReportView`) page element.
+
 Parameters:
-- `Par1`: Options.
+- `Par1`: Node options (JSONata or plain JSON):
+  - `fieldname`: FieldName of the report viewer element.
+  - `id`: Node id.
+  - `label`: Node text. `Node` when empty.
+  - `icon`: Icon name. `mdi:nodejs` when empty.
+  - `pid`: Parent node id. `#` (root) when empty.
+  - `url`: Node URL. `#` when empty.
 - `Cond`: JSONLogic condition.
 
-Adds node object to reportview page element.
-
+Example:
 ```text
-{
-     "id": "folder0", //node id
-     "fieldname": "repTree", //report viewer fieldname
-     "icon": "glyphs-poly:folder",
-     "label": "Legal Report",   
-     "pid": "#". //parent node id
-}
+NODE
+Par1: {"id": "folder0", "fieldname": "repTree", "icon": "glyphs-poly:folder", "label": "Legal Report", "pid": "#"}
+
+NODE
+Par1: {"id": "rep01", "fieldname": "repTree", "icon": "mdi:file", "label": "Headcount", "pid": "folder0"}
 ```
 
 ## OINFTY
+
+**Schemes:** Screen
 
 Reads or writes Organizational Management infotype data.
 
@@ -521,6 +682,8 @@ Cond:
 ```
 
 ## PBINFTY
+
+**Schemes:** Screen
 
 Updates applicant infotype data used in the applicant module.
 
@@ -544,6 +707,8 @@ Cond:
 ```
 
 ## PDF
+
+**Schemes:** Screen
 
 Generates a PDF document from a template and data.
 
@@ -570,9 +735,11 @@ Par1: {"template":"LEAVE_REPORT","pernr":"=container.Pernr","begda":"20240101","
 Cond:
 ```
 
-## PEOPLE
+## PEOPLE (Obsolote)
 
-Works on a filtered employee list.
+**Schemes:** none (disabled)
+
+Works on a filtered employee list. Disabled: a PEOPLE row is not executed.
 
 Parameters:
 - `Par1`: JSONata filter expression or selection object.
@@ -586,6 +753,8 @@ Cond:
 ```
 
 ## PJSON
+
+**Schemes:** Screen, Data
 
 Transforms JSON data and stores the result in a target variable or object.
 
@@ -605,22 +774,35 @@ Cond:
 ```
 ## PROG
 
-Calls program defined in Par1 with consitions in Cond column.
+**Schemes:** Screen, Data, Time, Payroll
+
+Runs a program (TypeScript, defined in the program editor) with the data of the scheme.
 
 Parameters:
-- `Par1`: Name of program.
-- `Par4`: Conditions.
+- `Par1`: Program name. The program must be active and its type must match the scheme:
 
+| Scheme | Program type | Function |
+|---|---|---|
+| Screen | `S` | `run(page, container)` |
+| Data | `D` | `run(container)` |
+| Time | `T` | `run(dayRow, dayRows)` |
+| Payroll | `P` | `run(container, wpbp)` |
+
+- `Par4`: JSONLogic condition.
+
+The program must return the objects it changes (`page` / `container` / `dayRow` / `wpbp`); only returned objects are written back.
+Samples for each type (validation, time types, wage types ...): [Program Samples](./TS_Samples.md).
 
 Example:
-This executes ZHR_01, calls program with page and container objects.
 ```text
 PROG
-Par1: ZHR_01
-Cond:
+Par1: ZPY_BONUS
+Par4:
 ```
 
 ## PRINT
+
+**Schemes:** Screen, Data, Time, Payroll
 
 Prints the requested object to the log output.
 
@@ -634,6 +816,8 @@ Par1: CONT
 ```
 
 ## RUNPY
+
+**Schemes:** Screen
 
 Runs the payroll calculation schema.
 
@@ -655,6 +839,8 @@ Cond:
 
 ## RUNTE
 
+**Schemes:** Screen
+
 Runs the time evaluation schema.
 
 Parameters:
@@ -673,7 +859,32 @@ Par1: {"PERNR":"12345","BEGDA":"20240101","ENDDA":"20240131","TEVTY":"MONTHLY"}
 Cond:
 ```
 
+## SETCITEM
+
+**Schemes:** Screen
+
+Sets the text of an item of a card table (`CardTable`) element on the screen.
+
+Parameters:
+- `Par1`: FieldName of the card table element.
+- `Par2`: `Value` of the item to update.
+- `Par3`: New text: a fixed text, or a JSONata expression starting with `=`.
+- `Par4`: JSONLogic condition.
+
+The row stops the scheme when the element, the item or the expression is invalid.
+
+Example:
+```text
+SETCITEM
+Par1: cardSummary
+Par2: TOTAL
+Par3: =$string(container.TotalDays) & " days"
+Par4:
+```
+
 ## SETDATA
+
+**Schemes:** Screen
 
 Assigns a value to a page field or object.
 
@@ -708,6 +919,8 @@ Cond: state0
 
 ## SETDEF
 
+**Schemes:** Screen
+
 Stores the current value of a field as the user’s default.
 
 Parameters:
@@ -722,6 +935,8 @@ Cond:
 ```
 
 ## SETENB
+
+**Schemes:** Screen
 
 Enables or disables a field.
 
@@ -740,6 +955,8 @@ Cond: {"==":[{"var":"container.UserRole"},"Viewer"]}
 
 ## SETHDR
 
+**Schemes:** Screen
+
 Sets the page or report header title.
 
 Parameters:
@@ -752,6 +969,8 @@ Par1: Employee Information
 ```
 
 ## SETOP
+
+**Schemes:** Screen
 
 Populates a field with dynamic option values.
 
@@ -785,6 +1004,8 @@ Cond:
 
 ## SETPROP
 
+**Schemes:** Screen
+
 Sets multiple properties on a field or component.
 
 Parameters:
@@ -801,6 +1022,8 @@ Cond:
 ```
 
 ## SETPROP1
+
+**Schemes:** Screen
 
 Sets a single property on a field or component.
 
@@ -821,6 +1044,8 @@ Cond:
 
 ## SETRQ
 
+**Schemes:** Screen
+
 Marks a field as required or optional.
 
 Parameters:
@@ -838,6 +1063,8 @@ Cond:
 
 ## SETVS
 
+**Schemes:** Screen
+
 Shows or hides a field.
 
 Parameters:
@@ -853,7 +1080,33 @@ Par2: false
 Cond: {"==":[{"var":"container.UserRole"},"Employee"]}
 ```
 
+## SMS
+
+**Schemes:** Screen
+
+Sends an SMS through the configured Posta Guvercini service.
+
+Parameters:
+- `Par1`: JSONata expression that resolves to an options object.
+- `Par4`: JSONLogic condition.
+
+Options:
+- `to`: Recipient phone number. Formatting characters and a leading `+` or `00` are normalized.
+- `message`: SMS content, up to 1000 characters.
+- `result`: Optional container variable name. Defaults to `SMSRESULT`.
+
+The result variable contains `success`, `channel`, `maskedTarget` and `timestamp`. Failures also contain `error`.
+
+Example:
+```text
+SMS
+Par1: {"to":container.Mobile,"message":"Your request has been approved.","result":"SmsResult"}
+Par4: {"==":[{"var":"Status"},"APPROVED"]}
+```
+
 ## TABLE
+
+**Schemes:** Screen
 
 Reads records from a database table and stores them in the container.
 
@@ -879,6 +1132,8 @@ Par2: {"WERKS": page.Elements[FieldName="WERKS"].Data}
 ```
 
 ## TASK
+
+**Schemes:** Screen, Data
 
 Creates a workflow task record and stores workflow data with it.
 
@@ -945,31 +1200,103 @@ Cond (Par4):
 }
 ```
 
-## NODE
+## TRXML
 
-Inserts new node in treeview.
+**Schemes:** Screen
+
+Creates an SGK notification XML (legal requirement for Turkey) and gives it to the page for download.
 
 Parameters:
-- `Par1`: Node options.
+- `Par1`: Options (JSONata or plain JSON):
+  - `pernr`: Personnel number (max 8 digits, required).
+  - `xmltype`: `1` = İşe Giriş Bildirgesi, `2` = İşten Çıkış Bildirgesi, `3` = Aylık Prim ve Hizmet Belgesi (required).
+  - Common fields: `sgkNo`, `unvan`, `tckn`, `ad`, `soyad`, `sigortaTuru`.
+  - Type 1: `dogumTarihi`, `cinsiyet`, `iseGirisTarihi`, `meslekKodu`, `ucret`.
+  - Type 2: `istenCikisTarihi`, `cikisNedeni`.
+  - Type 3: `yil`, `ay`, `calismaSayisi`, `gunSayisi`, `primMatrahi`.
+- `Par4`: JSONLogic condition.
+
+Notes:
+- Fields that are not given are filled with sample values, so pass all the fields.
+- An invalid `pernr` or `xmltype` shows an error message on the page and stops the scheme.
 
 Example:
 ```text
-{
-	"fieldname" :"reporttree1",
-	"icon" :"mdi:folder",
-	"label" :"ESS Reports",
-	"pid" :"#"
-}
-
-
+TRXML
+Par1: {"pernr": container.Pernr, "xmltype": "2", "tckn": container.Tckn, "ad": container.Vorna, "soyad": container.Nachn, "istenCikisTarihi": container.Endda, "cikisNedeni": "03"}
+Par4: {"==":[{"var":"PostFieldName"},"BTNXML"]}
 ```
 
+## VERIFY
 
+**Schemes:** Screen
 
+Sends or checks a six-digit verification code through the email or SMS service.
 
+Note: Not usable yet. The storage of the codes is not implemented, so the function returns an error.
 
+Parameters:
+- `Par1`: Verification channel: `EMAIL` or `SMS`.
+- `Par2`: Operation: `SEND` or `CHECK`.
+- `Par3`: JSONata expression that resolves to an options object.
+- `Par4`: JSONLogic condition.
 
+`SEND` options:
+- `target`: Recipient email address or phone number.
+- `purpose`: Optional context key. Defaults to `LOGIN`.
+- `language`: Optional `TR` or `EN`.
+- `result`: Optional container variable name. Defaults to `VERIFYRESULT`.
 
+The `SEND` result contains `challengeId`, `status: "SENT"`, `maskedTarget` and `expiresAt`. Pass its `challengeId` into the later `CHECK` call.
+
+`CHECK` options:
+- `challengeId`: ID returned by `SEND`.
+- `code`: Six-digit code entered by the user.
+- `purpose`: Must match the value used by `SEND`.
+- `result`: Optional container variable name.
+
+The `CHECK` result has `verified: true` and `status: "VERIFIED"` when the code is correct. Codes expire after five minutes and allow at most five failed attempts.
+
+Example:
+```text
+VERIFY
+Par1: EMAIL
+Par2: SEND
+Par3: {"target":container.Email,"purpose":"LOGIN","result":"Verification"}
+Par4:
+
+VERIFY
+Par1: EMAIL
+Par2: CHECK
+Par3: {"challengeId":container.Verification.challengeId,"code":container.VerificationCode,"purpose":"LOGIN","result":"Verification"}
+Par4:
+```
+
+## WORKDAYS
+
+**Schemes:** Screen, Data
+
+Calculates the working days of an employee between two dates (both included) and writes the number into the container.
+
+Parameters:
+- `Par1`: Options object (JSONata on the container, plain JSON also works):
+  - `pernr`: Employee; `container.UserPernr` when empty.
+  - `begda`, `endda`: First and last day as `YYYYMMDD`, `YYYY-MM-DD` or a date; `endda` = `begda` when empty.
+  - `sap`: `true` reads the SAP service `zorc_abs_day`. Otherwise the work schedule is used (the same `ABWTG` that leave approval / `INFTY` writes to PA2001).
+  - `field`: Container element of the result; a path such as `Data.TotalDays` is allowed. `WORKDAYS` when empty.
+- `Par4`: JSONLogic condition.
+
+Notes:
+- Missing `pernr` / `begda` skips the row without an error.
+- Errors (invalid dates, SAP failures) stop the scheme: a page message in screen schemes, a `MESSAGE` action of type `E` in data schemes (which also stops a task).
+- In data schemes the dates of `Data` arrive as `YYYYMMDD`.
+
+Example (data scheme of a workflow form, recalculated when a date changes):
+```text
+WORKDAYS
+Par1: {"pernr": Data.Pernr, "begda": Data.Begda, "endda": Data.Endda, "sap": true, "field": "Data.TotalDays"}
+Par4: {"in":[{"var":"PostBackField"},["BEGDA","ENDDA"]]}
+```
 
 ## Common JSONLogic Examples
 
@@ -1195,4 +1522,3 @@ Cond:
 - Most functions accept JSONata-based option values when a parameter starts with `=`.
 - Most conditional checks use JSONLogic.
 - Several functions write into `page`, `container`, or both.
-- Some seeded function codes exist in the seed file but are not implemented as `fu*.ts` files in this folder.
