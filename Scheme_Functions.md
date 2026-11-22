@@ -331,17 +331,20 @@ Cond:
 
 **Schemes:** Screen, Data
 
-Loads employee master data by personnel number and stores the result in `container.PNP`.
+Loads employee master data and stores the result in `container.PNP`. It works in two ways:
+- **Single employee** (default): loads one employee by personnel number.
+- **Several employees** (`"Mode": "M"`): loads every employee the user is authorized for (auth objects), optionally narrowed by organizational fields and infotype records. Works in both Screen and Data schemes.
 
 Parameters:
-- `Par1`: Options object or personnel number reference.
+- `Par1`: Options object (JSONata, evaluated on the container) or personnel number reference.
 - `Cond`: JSONLogic condition. StateId.
 
 Notes:
 - If `Par1` is empty, `container.UserPernr` is used.
-- Variants such as `pernr`, `PERNR`, and `Pernr` are supported.
+- Option keys are case-insensitive: `pernr`, `PERNR`, `Pernr`, `Mode`, `MODE` etc. are all supported.
 
-Example:
+### Single employee
+
 ```text
 GETPERNR
 Par1: 
@@ -352,15 +355,69 @@ Cond: Get
 ```
 ```text
 GETPERNR
+Par1:
 {
-"PERNR": page.Elements[FieldName="PERNR"].Data
+	"PERNR": page.Elements[FieldName="PERNR"].Data
 }
 Cond: Get
 ```
-
-Retrieve people data based on auth objects of user
+In a Data scheme:
 ```text
 GETPERNR
+Par1: {"pernr": Data.PERNR}
+Cond:
+```
+
+### Several employees (Mode M)
+
+Retrieves people data based on the auth objects of the user. `container.PNP` becomes a **list** of employees, and the records of each requested infotype are written to `container.P0000`, `container.P0001`, … (one flat list per infotype, rows of all employees).
+
+Options:
+
+| Option | Description |
+|---|---|
+| `Mode` | `"M"` – required for multiple selection. |
+| `Pernr` | Personnel number(s). Optional. |
+| `Bukrs`, `Werks`, `Btrtl`, `Persg`, `Persk`, `Stell`, `Orgeh`, `Abkrs`, `Plans`, `Stat2` | Organizational selection fields. A single value or an array (`["1000","2000"]`). Optional. |
+| `Begda`, `Endda` | Selection period, `YYYYMMDD` (or `YYYY-MM-DD`). Optional. |
+| `MaxResults` | Maximum number of employees. Optional. |
+| `Infotypes` | List of infotype selections (see below). Optional. |
+
+`Infotypes` entry:
+
+| Field | Description |
+|---|---|
+| `Infty` | Infotype number, e.g. `"0000"` (padded to 4 digits). |
+| `Begda`, `Endda` | Records overlapping this period are read. Defaults: `18000101` – `99991231`. |
+| `Subty` | Subtype. Optional. |
+| `Filter` | Field filter on the infotype records (see below). Optional. |
+| `Required` | `true`: only employees that have at least one record of this selection stay in `PNP` (and in the other infotype lists). Optional. |
+
+Only the infotypes/subtypes the user is authorized for (P_ORGIN) are read. Entries with an invalid `Infty`, date or `Subty` are skipped.
+
+#### Filter
+
+`Filter` is an object whose keys are column names of the `PAxxxx` table and whose values are conditions. All conditions are combined with AND.
+
+| Syntax | Meaning |
+|---|---|
+| `"MASSN": "01"` | equal |
+| `"MASSN": ["01", "02"]` | one of |
+| `"BEGDA": {"from": "20261001", "to": "20261031"}` | range, both ends included (`from` or `to` may be left out) |
+| `"MASSG": {"not": "05"}` | not equal |
+| `"MASSG": {"not": ["05", "06"]}` | none of |
+
+Notes:
+- Field names are checked against the table. An unknown field (e.g. a typo) or a value that does not fit the column type makes the whole GETPERNR fail with an error – it never silently selects everybody.
+- Dates are given as `YYYYMMDD` (or `YYYY-MM-DD`), numbers as number or text.
+- In Screen schemes the error is shown on the page; in Data schemes it is returned as a `MESSAGE` action of type `E` (which also stops a task).
+
+#### Examples
+
+All authorized employees with organizational selection:
+```text
+GETPERNR
+Par1:
 {
 	"MODE": "M", //mode M means multiple people will be accessed
 	"BUKRS": "", //optional, company code
@@ -372,45 +429,129 @@ GETPERNR
 	"ORGEH": "", //optional, organization unit
 	"ABKRS": "", //optional, payroll area
 	"PLANS": "", //optional, position
-	"STAT2": "", //optional, status
-
+	"STAT2": "" //optional, status
 }
 Cond: Get
 ```
-or use simply /if there is no selection needed
+
+Simply, if no selection is needed:
 ```text
 GETPERNR
+Par1:
 {
-	"MODE": "M" //mode M means multiple people will be accessed
+	"MODE": "M"
 }
 Cond: Get
 ```
-or use simply /if there is no selection needed but with authorized infotypes
+
+Without selection but with authorized infotypes (results in `container.P0000`, `container.P0001`, `container.P0002`):
 ```text
+GETPERNR
+Par1:
 {
-     "Mode": "M",
-     "Infotypes": [
-            {
-              'Infty': '0000',
-              'Begda': '20260101',
-              'Endda': '99991231',
-              'Subty': ''
-            },
-            {
-              'Infty': '0001',
-              'Begda': '20260101',
-              'Endda': '99991231',
-              'Subty': ''
-            },
-            {
-              'Infty': '0002',
-              'Begda': '20260101',
-              'Endda': '99991231',
-              'Subty': ''
-            }
-     ]
+	"Mode": "M",
+	"Infotypes": [
+		{ "Infty": "0000", "Begda": "20260101", "Endda": "99991231", "Subty": "" },
+		{ "Infty": "0001", "Begda": "20260101", "Endda": "99991231", "Subty": "" },
+		{ "Infty": "0002", "Begda": "20260101", "Endda": "99991231", "Subty": "" }
+	]
 }
+Cond: Get
 ```
+
+Active employees of two personnel areas:
+```text
+GETPERNR
+Par1:
+{
+	"Mode": "M",
+	"Werks": ["1000", "2000"],
+	"Stat2": "3"
+}
+Cond: Get
+```
+
+Hired in October 2026 (action type `01`, only those employees stay in `PNP`):
+```text
+GETPERNR
+Par1:
+{
+	"Mode": "M",
+	"Infotypes": [
+		{
+			"Infty": "0000",
+			"Filter": {
+				"MASSN": "01",
+				"BEGDA": { "from": "20261001", "to": "20261031" }
+			},
+			"Required": true
+		}
+	]
+}
+Cond: Get
+```
+
+Hired in the last 30 days (dynamic dates with JSONata):
+```text
+GETPERNR
+Par1:
+{
+	"Mode": "M",
+	"Stat2": "3",
+	"Infotypes": [
+		{
+			"Infty": "0000",
+			"Filter": {
+				"MASSN": "01",
+				"BEGDA": {
+					"from": $fromMillis($toMillis(SysDate, '[Y0001][M01][D01]') - 30*86400000, '[Y0001][M01][D01]'),
+					"to": SysDate
+				}
+			},
+			"Required": true
+		}
+	]
+}
+Cond: Get
+```
+
+Hires (`01`) and leavers (`10`) in 2026, excluding reasons `05` and `06` (`not`):
+```text
+GETPERNR
+Par1:
+{
+	"Mode": "M",
+	"Infotypes": [
+		{
+			"Infty": "0000",
+			"Begda": "20260101",
+			"Endda": "20261231",
+			"Filter": {
+				"MASSN": ["01", "10"],
+				"MASSG": { "not": ["05", "06"] }
+			},
+			"Required": true
+		}
+	]
+}
+Cond: Get
+```
+
+Several selections combined – employees with a `0001` record in org unit `50000001` **and** an address (`0006`, subtype `1`); `0002` is read only as extra data, not as a condition:
+```text
+GETPERNR
+Par1:
+{
+	"Mode": "M",
+	"Infotypes": [
+		{ "Infty": "0001", "Filter": { "ORGEH": "50000001" }, "Required": true },
+		{ "Infty": "0006", "Subty": "1", "Required": true },
+		{ "Infty": "0002" }
+	]
+}
+Cond: Get
+```
+When more than one entry has `"Required": true`, an employee must have a record in **each** of them. Employees dropped by `Required` are also removed from all infotype lists.
 
 ## GETREPORT
 
